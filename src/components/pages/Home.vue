@@ -1,3 +1,3 @@
-<template lang="jade">
-	div
+<template>
+	<p>test #1</p>
 </template>

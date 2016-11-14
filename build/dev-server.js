@@ -6,6 +6,11 @@ var express = require('express')
 var webpack = require('webpack')
 var opn = require('opn')
 var proxyMiddleware = require('http-proxy-middleware')
+var bodyParser = require('body-parser')
+var httpServ = require('http')
+var sock = require('socket.io')
+var sockC = require('socket.io-client')
+
 var webpackConfig = process.env.NODE_ENV === 'testing'
   ? require('./webpack.prod.conf')
   : require('./webpack.dev.conf')
@@ -13,11 +18,13 @@ var webpackConfig = process.env.NODE_ENV === 'testing'
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
 // Define HTTP proxies to your custom API backend
-// https://github.com/chimurai/http-proxy-middleware
 var proxyTable = config.dev.proxyTable
 
-var app = express()
+var app = module.exports = express()
 var compiler = webpack(webpackConfig)
+var server = httpServ.Server(app)
+var io = sock(server)
+require('../server/controllers/sockets.js')(io)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,
@@ -55,16 +62,20 @@ app.use(devMiddleware)
 // compilation error display
 app.use(hotMiddleware)
 
+app.use( bodyParser.json() )        // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+}))
+
 // serve pure static assets
-var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
-app.use(staticPath, express.static('./static'))
-require('../config/monCon.js')
-module.exports = app.listen(port, function (err) {
+app.use('../src', express.static(path.join(__dirname, '../src')))
+app.use('/', require('../server/routes/defaults'))
+
+module.exports = server.listen(port, function (err) {
   if (err) {
     console.log(err)
     return
   }
   var uri = 'http://localhost:' + port
   console.log('Listening at ' + uri + '\n')
-  //opn(uri)
 })

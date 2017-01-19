@@ -27,19 +27,22 @@ module.exports.getT = function(req, conn, callback){
 }
 module.exports.sendT = function(req, conn, callback){
   console.log('in model');
+  //console.log(conn.client);
   conn.client.connect(conn.link, function (err, db) {
     if (err) {
       	console.log('Unable to connect to the mongoDB server. Error:', err);
     }
     else{	
 		console.log('Connected to Database');
+		//console.log(db);
+		console.log(db.collection);
 		db.collection('testing', function(err, coll){
 			if(err){
 				console.log('Unable to connect to the mongoDB collection. Error:', err);
 			}
 			else{
 				console.log('Collection Acquired');
-				console.log(req.body);
+				//console.log(req.body);
 				/*coll.insert(req.body, function(err){
 					if(err){
 						console.log('Insert failed!');

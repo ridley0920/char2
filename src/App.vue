@@ -4,6 +4,8 @@
     <hello></hello>
    <router-link to="/">Home</router-link>
    <router-link to="/h2">Hello 2</router-link>
+   <router-link to="/sheet/view">Sheet View</router-link>
+   <router-link to="/sheet/edit">Sheet Edit</router-link>
   </div>
 </template>
 

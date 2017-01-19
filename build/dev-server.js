@@ -23,7 +23,7 @@ var proxyTable = config.dev.proxyTable
 var app = module.exports = express()
 var compiler = webpack(webpackConfig)
 var server = httpServ.Server(app)
-var io = sock(server)
+var io = require('socket.io')(server)
 require('../server/controllers/sockets.js')(io)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
@@ -69,7 +69,9 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 
 // serve pure static assets
 app.use('../src', express.static(path.join(__dirname, '../src')))
+app.use('../sheet/.', require('../server/routes/chars'))
 app.use('/', require('../server/routes/defaults'))
+
 
 module.exports = server.listen(port, function (err) {
   if (err) {

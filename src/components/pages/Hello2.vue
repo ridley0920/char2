@@ -13,6 +13,7 @@
   export default {
     data () {
       return {
+        // io: {},
         xs: {},
         place: 0,
         newVal: {
@@ -21,6 +22,9 @@
         }
       }
     },
+     /* compiled () {
+      this.io = io()
+    }, */
     methods: {
       sendTest (callback) {
         console.log(this.newVal)
@@ -32,10 +36,11 @@
         .then(function (response) {
           console.log('data sent')
           // this.xs.push(response.data)
-          this.$socket.emit('dataSent', response.data)
-          // this.$socket.broadcast.emit('valueChanged', response.data)
           console.log('emit')
+          // console.log(this)
           console.log(this.$socket)
+          this.$socket.send('dataSent', response.data)
+          // this.$socket.broadcast.emit('valueChanged', response.data)
         }, function (response) {
           console.error('Error sending data')
         })
@@ -43,8 +48,8 @@
     },
     sockets: {
       dataSent: function (val) {
-        this.$socket.broadcast.emit('valueChanged', val)
         console.log('emit')
+        this.$socket.broadcast.emit('valueChanged', val)
         // console.log(this.)
       }
     }
